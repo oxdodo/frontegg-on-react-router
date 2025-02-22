@@ -1,16 +1,34 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route } from 'react-router'
 
-function App() {
-  const [count, setCount] = useState(0)
+import { FronteggProvider } from "@frontegg/react";
 
-  return (
-    <>
-      <h1>This is the main app</h1>
-    </>
-  )
+import { Home } from './Home'
+import { Settings } from './Settings'
+import ProtectRoute from './Route'
+
+const fronteggOptions = {
+  contextOptions: {
+    baseUrl: import.meta.env.VITE_FRONTEGG_BASE_URL,
+    clientId: import.meta.env.VITE_FRONTEGG_CLIENT_ID, 
+    appId: import.meta.env.VITE_FRONTEGG_APP_ID,
+  }
 }
 
-export default App
+function App() {
+    const [isLoading, setIsLoading] = useState(true);
+
+    return (
+        <>
+            <FronteggProvider customLoader={setIsLoading} {...fronteggOptions}>
+                <Routes>
+                    <Route path="/" element={<Home />}/>
+                    <Route path="private-route" element={<ProtectRoute><Settings /></ProtectRoute>}/>
+                </Routes>
+            </FronteggProvider>
+            {isLoading && 'This is my custom Loader'}
+        </>
+    );
+}
+
+export default App;
